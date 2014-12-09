@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the search_label module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function search_label_install() {
+  // get list search active modules from valiable table
+  $res = db_select('{variable}', 'v')
+    ->fields('v', array('name', 'value'))
+    ->condition('name', 'search_active_modules')
+    ->execute()
+    ->fetchObject();
+
+  // add in list search active modules, search_label module
+  if (!empty($res) && !empty($res->value)) {
+    $str = $res->value;
+    $values = unserialize($str);
+    if (!array_key_exists('search_label', $values)) {
+      $values['search_label'] = 'search_label';
+    }
+    $str = serialize($values);
+
+    // save changed list in db
+    db_update('{variable}')
+      ->fields(array('value' => $str))
+      ->condition('name', 'search_active_modules')
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function search_label_uninstall() {
+  // get list search active modules from valiable table
+  $res = db_select('{variable}', 'v')
+    ->fields('v', array('name', 'value'))
+    ->condition('name', 'search_active_modules')
+    ->execute()
+    ->fetchObject();
+
+  // delete from list search active modules, search_label module
+  if (!empty($res) && !empty($res->value)) {
+    $str = $res->value;
+    $values = unserialize($str);
+    if (!array_key_exists('search_label', $values)) {
+      unset($values['search_label']);
+    }
+    $str = serialize($values);
+
+    // save changed list in db
+    db_update('{variable}')
+      ->fields(array('value' => $str))
+      ->condition('name', 'search_active_modules')
+      ->execute();
+  }
+}

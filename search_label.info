@@ -1,0 +1,4 @@
+name = Search Label
+description = Adds indexer and search executer only by node title
+core = 7.x
+package = Search
